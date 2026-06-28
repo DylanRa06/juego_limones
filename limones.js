@@ -101,7 +101,6 @@ function detectarPiso(){
     if(limonY + ALTURA_LIMON >= canvas.height - ALTURA_SUELO){
         vidas -= 1;
         document.getElementById("txtVidas").innerText = vidas;
-        
         if(vidas <= 0){
             alert("GAME OVER. Te quedaste sin vidas.");
             reiniciarJuego();
