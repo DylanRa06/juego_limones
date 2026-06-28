@@ -13,15 +13,18 @@ let limonY = 5;
 let puntos = 0;
 let vidas = 3;
 let velocidadCaida = 200;
+let intervalo;
 
 function iniciar(){
-    setInterval(bajarLimon, velocidadCaida);
     canvas = document.getElementById("areaJuego");
     ctx = canvas.getContext("2d");
     personajeX = canvas.width / 2 - ANCHO_PERSONAJE / 2;
     personajeY = canvas.height - (ALTURA_SUELO + ALTURA_PERSONAJE);
     actualizarPantalla();
     aparecerLimon();
+    
+    // Aquí guardamos el temporizador para poder frenarlo después
+    intervalo = setInterval(bajarLimon, velocidadCaida);
 }
 
 function moverDerecha(){
@@ -78,6 +81,17 @@ function reiniciarJuego(){
     document.getElementById("txtVidas").innerText = vidas;
     aparecerLimon();
 }   
+function aparecerLimon(){
+    limonX = generarAleatorio(0, canvas.width - ANCHO_LIMON);
+    limonY = 0;
+    actualizarPantalla();
+    
+    // IMPORTANTE: Limpiamos y volvemos a lanzar el intervalo con la velocidad correcta
+    clearInterval(intervalo);
+    if (vidas > 0 && puntos < 10) {
+        intervalo = setInterval(bajarLimon, velocidadCaida);
+    }
+}
 
 function detectarColision(){
     if(limonX < personajeX + ANCHO_PERSONAJE &&
@@ -85,36 +99,32 @@ function detectarColision(){
        limonY < personajeY + ALTURA_PERSONAJE &&
        limonY + ALTURA_LIMON > personajeY){
         
-        // Sumamos de 1 en 1 para poder evaluar los hitos del taller (3, 6, 10)
         puntos += 1; 
         document.getElementById("txtPuntaje").innerText = puntos;
 
-        // Validaciones de velocidad solicitadas
+        // Validamos hitos de velocidad
         if(puntos == 3) {
-            velocidadCaida = 150;
+            velocidadCaida = 100; // Bajamos el tiempo para que vaya más rápido de golpe
         } else if(puntos == 6) {
-            velocidadCaida = 100;
+            velocidadCaida = 50;  // Súper rápido
         } else if(puntos == 10) {
+            clearInterval(intervalo); 
             alert("¡TIENES LOS LIMONES, AHORA TE FALTA SAL Y TEQUILA! 🍋🇲🇽");
+            return; 
         }
 
         aparecerLimon();
     }
 }
 
-function aparecerLimon(){
-    limonX = generarAleatorio(0, canvas.width - ANCHO_LIMON);
-    limonY = 0;
-    actualizarPantalla();
-}
-
 function detectarPiso(){
     if(limonY + ALTURA_LIMON >= canvas.height - ALTURA_SUELO){
         vidas -= 1;
         document.getElementById("txtVidas").innerText = vidas;
-        if(vidas <= 0){
-            alert("GAME OVER. Te quedaste sin vidas.");
-            reiniciarJuego();
+        
+        if(vidas == 0){
+            clearInterval(intervalo); 
+            alert("GAME OVER");
         } else {
             aparecerLimon();
         }
