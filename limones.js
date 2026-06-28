@@ -85,8 +85,19 @@ function detectarColision(){
        limonY < personajeY + ALTURA_PERSONAJE &&
        limonY + ALTURA_LIMON > personajeY){
         
-        puntos += 5;
+        // Sumamos de 1 en 1 para poder evaluar los hitos del taller (3, 6, 10)
+        puntos += 1; 
         document.getElementById("txtPuntaje").innerText = puntos;
+
+        // Validaciones de velocidad solicitadas
+        if(puntos == 3) {
+            velocidadCaida = 150;
+        } else if(puntos == 6) {
+            velocidadCaida = 100;
+        } else if(puntos == 10) {
+            alert("¡TIENES LOS LIMONES, AHORA TE FALTA SAL Y TEQUILA! 🍋🇲🇽");
+        }
+
         aparecerLimon();
     }
 }
