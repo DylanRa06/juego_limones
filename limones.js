@@ -20,23 +20,27 @@ function iniciar(){
     ctx = canvas.getContext("2d");
     personajeX = canvas.width / 2 - ANCHO_PERSONAJE / 2;
     personajeY = canvas.height - (ALTURA_SUELO + ALTURA_PERSONAJE);
+    
     actualizarPantalla();
     aparecerLimon();
     
-    // Aquí guardamos el temporizador para poder frenarlo después
     intervalo = setInterval(bajarLimon, velocidadCaida);
 }
 
 function moverDerecha(){
-    personajeX += 10;
-    actualizarPantalla();
-    detectarColision();
+    if (vidas > 0 && puntos < 10) {
+        personajeX += 10;
+        actualizarPantalla();
+        detectarColision();
+    }
 }
 
 function moverIzquierda(){
-    personajeX -= 10;
-    actualizarPantalla();
-    detectarColision();
+    if (vidas > 0 && puntos < 10) {
+        personajeX -= 10;
+        actualizarPantalla();
+        detectarColision();
+    }
 }
 
 function actualizarPantalla(){
@@ -73,25 +77,17 @@ function bajarLimon(){
 }
 
 function reiniciarJuego(){
-    personajeX = canvas.width / 2 - ANCHO_PERSONAJE / 2;
-    limonY = 5;
+    clearInterval(intervalo);
     puntos = 0;
     vidas = 3;
+    velocidadCaida = 200;
+    limonY = 5;
+    
     document.getElementById("txtPuntaje").innerText = puntos;
     document.getElementById("txtVidas").innerText = vidas;
-    aparecerLimon();
-}   
-function aparecerLimon(){
-    limonX = generarAleatorio(0, canvas.width - ANCHO_LIMON);
-    limonY = 0;
-    actualizarPantalla();
     
-    // IMPORTANTE: Limpiamos y volvemos a lanzar el intervalo con la velocidad correcta
-    clearInterval(intervalo);
-    if (vidas > 0 && puntos < 10) {
-        intervalo = setInterval(bajarLimon, velocidadCaida);
-    }
-}
+    iniciar();
+}   
 
 function detectarColision(){
     if(limonX < personajeX + ANCHO_PERSONAJE &&
@@ -102,19 +98,28 @@ function detectarColision(){
         puntos += 1; 
         document.getElementById("txtPuntaje").innerText = puntos;
 
-        // Validamos hitos de velocidad
         if(puntos == 3) {
-            velocidadCaida = 100; // Bajamos el tiempo para que vaya más rápido de golpe
+            clearInterval(intervalo);
+            velocidadCaida = 100;
+            intervalo = setInterval(bajarLimon, velocidadCaida);
         } else if(puntos == 6) {
-            velocidadCaida = 50;  // Súper rápido
+            clearInterval(intervalo);
+            velocidadCaida = 50;
+            intervalo = setInterval(bajarLimon, velocidadCaida);
         } else if(puntos == 10) {
             clearInterval(intervalo); 
             alert("¡TIENES LOS LIMONES, AHORA TE FALTA SAL Y TEQUILA! 🍋🇲🇽");
-            return; 
+            return;
         }
 
         aparecerLimon();
     }
+}
+
+function aparecerLimon(){
+    limonX = generarAleatorio(0, canvas.width - ANCHO_LIMON);
+    limonY = 0;
+    actualizarPantalla();
 }
 
 function detectarPiso(){
