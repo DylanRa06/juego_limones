@@ -10,6 +10,9 @@ let personajeY = 320;
 let limonX = 250;
 let limonY = 5;
 
+let puntos = 0;
+let vidas = 3;
+
 function iniciar(){
     canvas = document.getElementById("areaJuego");
     ctx = canvas.getContext("2d");
@@ -53,7 +56,7 @@ function limpiarCanva(){
 }
 
 function dibujarLimon (){   
-     ctx.fillStyle = "green";
+    ctx.fillStyle = "green";
     ctx.fillRect(limonX, limonY, ANCHO_LIMON, ALTURA_LIMON); 
 }
 
@@ -61,13 +64,17 @@ function bajarLimon(){
     limonY += 10;
     actualizarPantalla();
     detectarColision(); 
+    detectarPiso();
 }
 
 function reiniciarJuego(){
     personajeX = canvas.width / 2 - ANCHO_PERSONAJE / 2;
-    limonX = 250;
     limonY = 5;
-    actualizarPantalla();
+    puntos = 0;
+    vidas = 3;
+    document.getElementById("txtPuntaje").innerText = puntos;
+    document.getElementById("txtVidas").innerText = vidas;
+    aparecerLimon();
 }   
 
 function detectarColision(){
@@ -75,14 +82,29 @@ function detectarColision(){
        limonX + ANCHO_LIMON > personajeX &&
        limonY < personajeY + ALTURA_PERSONAJE &&
        limonY + ALTURA_LIMON > personajeY){
-        alert("Has atrapado el limon");
+        
+        puntos += 5;
+        document.getElementById("txtPuntaje").innerText = puntos;
+        aparecerLimon();
     }
 }
 
-
-function  aparecerLimon(){
-
-    limonX=generarAleatorio(0,canvas.width-ANCHO_LIMON);
-    limonY=0;
+function aparecerLimon(){
+    limonX = generarAleatorio(0, canvas.width - ANCHO_LIMON);
+    limonY = 0;
     actualizarPantalla();
+}
+
+function detectarPiso(){
+    if(limonY + ALTURA_LIMON >= canvas.height - ALTURA_SUELO){
+        vidas -= 1;
+        document.getElementById("txtVidas").innerText = vidas;
+        
+        if(vidas <= 0){
+            alert("GAME OVER. Te quedaste sin vidas.");
+            reiniciarJuego();
+        } else {
+            aparecerLimon();
+        }
+    }
 }
