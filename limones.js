@@ -12,8 +12,10 @@ let limonY = 5;
 
 let puntos = 0;
 let vidas = 3;
+let velocidadCaida = 200;
 
 function iniciar(){
+    setInterval(bajarLimon, velocidadCaida);
     canvas = document.getElementById("areaJuego");
     ctx = canvas.getContext("2d");
     personajeX = canvas.width / 2 - ANCHO_PERSONAJE / 2;
